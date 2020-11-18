@@ -1,0 +1,28 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas{
+    margin: 0 auto;
+}
+
+.kapsayici-div{
+    display: flex;
+    flex-direction: column;
+}
+.skor-text{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-items: center;
+}
