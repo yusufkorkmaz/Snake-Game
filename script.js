@@ -2,8 +2,8 @@ const canvas = document.querySelector('canvas'),
     ctx = canvas.getContext('2d'),
     sutunSayisi = 11,
     satirSayisi = 11,
-    kutuGenisligi = 30,
-    kutuYuksekligi = 30,
+    kutuGenisligi = 35,
+    kutuYuksekligi = 35,
     yatayKenarKalinligi = 1,
     dikeyKenarKalinligi = 1;
 
@@ -17,7 +17,11 @@ let toplamGenislik = (kutuGenisligi + dikeyKenarKalinligi) * sutunSayisi + dikey
     yemeginBulunduguSutun = 0,
     yemeginBulunduguOncekiSatir = 0,
     yemeginBulunduguOncekiSutun = 0,
+    kutucukSolUstX,
+    kutucukSolUstY,
     skor = 0,
+    gidilecekYonAdi = '',
+    gozBuyuklugu = kutuGenisligi / 4,
     previousStyle = '';
 
 canvas.width = toplamGenislik;
@@ -54,10 +58,37 @@ function kutuRenklendir(satir, sutun, renk) {
     const koordinatlar = koordinatBul(satir, sutun);
     previousStyle = ctx.fillStyle;
     ctx.fillStyle = renk;
-    let kutucukSolUstX = dikeyKenarKalinligi + koordinatlar.x;
-    let kutucukSolUstY = yatayKenarKalinligi + koordinatlar.y;
+    kutucukSolUstX = dikeyKenarKalinligi + koordinatlar.x;
+    kutucukSolUstY = yatayKenarKalinligi + koordinatlar.y;
 
     ctx.fillRect(kutucukSolUstX, kutucukSolUstY, kutuGenisligi, kutuYuksekligi);
+    ctx.fillStyle = previousStyle;
+}
+
+function pekmeninGozleriniCiz(gidilecekYonAdi) {
+    previousStyle = ctx.fillStyle;
+    ctx.fillStyle = 'white';
+    let sagGozX = kutucukSolUstX + (kutuGenisligi / 2) + (kutuGenisligi / 10);
+    let solGozX = kutucukSolUstX + (kutuGenisligi / 10);
+    let yukaridakiGozlerY = kutucukSolUstY + (kutuYuksekligi / 10);
+    let asagidakiGozlerY = kutucukSolUstY - (kutuYuksekligi / 2) + kutuYuksekligi;
+
+    switch (gidilecekYonAdi) {
+        case "up":
+            ctx.fillRect(solGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            ctx.fillRect(sagGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            break;
+        case "down":
+            ctx.fillRect(solGozX, asagidakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            ctx.fillRect(sagGozX, asagidakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            break;
+        case "left":
+            ctx.fillRect(solGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            break;
+        case "right":
+            ctx.fillRect(sagGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            break;
+    }
     ctx.fillStyle = previousStyle;
 }
 
@@ -79,33 +110,37 @@ function pekmeniOrtala() {
     pekmeniCiz();
 }
 
-function gidilecekYon(){}
-
 setInterval(gameLoop, 200);
+
+function gidilecekYonFonksiyonu() {
+}
 
 function gameLoop() {
     pekmeninOncekiBulunduguSatir = pekmeninBulunduguSatir;
     pekmeninOncekiBulunduguSutun = pekmeninBulunduguSutun;
-    gidilecekYon();
-    pekmeniHareketEttir();
+    gidilecekYonFonksiyonu();
+    pekmeniHareketEttir(gidilecekYonAdi);
 }
 
 function klavyeTuslarindanBirineBasildi(e) {
     switch (e.code) {
         case 'ArrowUp':
-            gidilecekYon = yukariCik;
+            gidilecekYonFonksiyonu = yukariCik;
+            gidilecekYonAdi = 'up';
             break;
         case 'ArrowDown':
-            gidilecekYon = asagiIn;
+            gidilecekYonFonksiyonu = asagiIn;
+            gidilecekYonAdi = 'down';
             break;
         case 'ArrowLeft':
-            gidilecekYon = solaGit;
+            gidilecekYonFonksiyonu = solaGit;
+            gidilecekYonAdi = 'left';
             break;
         case 'ArrowRight':
-            gidilecekYon = sagaGit;
+            gidilecekYonFonksiyonu = sagaGit;
+            gidilecekYonAdi = 'right';
             break;
     }
-    pekmeniHareketEttir();
 }
 
 function yukariCik() {
@@ -124,12 +159,14 @@ function sagaGit() {
     pekmeninBulunduguSutun++;
 }
 
-function pekmeniHareketEttir() {
+function pekmeniHareketEttir(gidilecekYonAdi) {
     if (yemeginUstundeMi()) {
         yemegiYe();
     }
+
     oncekiPekmeniSil();
     pekmeniCiz();
+    pekmeninGozleriniCiz(gidilecekYonAdi);
 
     pekmenDuvariGectiMi();
 }
@@ -146,12 +183,15 @@ function yemegiYe() {
 
 function pekmenDuvariGectiMi() {
     if (pekmeninBulunduguSatir < 0 || pekmeninBulunduguSatir > satirSayisi - 1 || pekmeninBulunduguSutun < 0 || pekmeninBulunduguSutun > sutunSayisi - 1) {
-        gidilecekYon = function (){};
+        gidilecekYonFonksiyonu = function () {
+        };
         skor = 0;
         document.getElementById('skor').innerHTML = '' + skor;
         pekmenDuvariGecerseYemegiSil();
         pekmeniOrtala();
         yemekCiz();
+
+
     }
 }
 
@@ -169,9 +209,3 @@ yemekCiz();
 pekmeniOrtala();
 document.getElementById('skor').innerHTML = '' + skor;
 document.addEventListener('keydown', klavyeTuslarindanBirineBasildi);
-
-
-/*
-* X yönünde ilerliyorsa animasyon sadece X yönünde etki edecek
-* Y yönünde ilerliyorsa animasyon sadece Y yönünde etki edecek
-*/
