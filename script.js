@@ -5,29 +5,95 @@ const canvas = document.querySelector('canvas'),
     kutuGenisligi = 35,
     kutuYuksekligi = 35,
     yatayKenarKalinligi = 1,
-    dikeyKenarKalinligi = 1;
+    dikeyKenarKalinligi = 1,
+    satirlarinOrtasi = Math.floor(satirSayisi / 2),
+    sutunlarinOrtasi = Math.floor(sutunSayisi / 2);
 
-let toplamGenislik = (kutuGenisligi + dikeyKenarKalinligi) * sutunSayisi + dikeyKenarKalinligi,
-    toplamYukseklik = (kutuYuksekligi + yatayKenarKalinligi) * satirSayisi + yatayKenarKalinligi,
-    pekmeninBulunduguSatir = Math.floor(satirSayisi / 2),
-    pekmeninBulunduguSutun = Math.floor(sutunSayisi / 2),
-    pekmeninOncekiBulunduguSatir = 0,
-    pekmeninOncekiBulunduguSutun = 0,
-    yemeginBulunduguSatir = 0,
-    yemeginBulunduguSutun = 0,
+let score = 0,
+    gidilecekYonAdi = '',
+    kuyrukKonumlari = [],
+    yilaninKafasininBulunduguSatir = satirlarinOrtasi,
+    yilaninKafasininBulunduguSutun = sutunlarinOrtasi,
     yemeginBulunduguOncekiSatir = 0,
     yemeginBulunduguOncekiSutun = 0,
-    kutucukSolUstX,
-    kutucukSolUstY,
-    skor = 0,
-    gidilecekYonAdi = '',
-    gozBuyuklugu = kutuGenisligi / 4,
-    kuyruklar = [],
-    previousStyle = '';
+    yemeginBulunduguSatir = 0,
+    yemeginBulunduguSutun = 0,
+    toplamGenislik = (kutuGenisligi + dikeyKenarKalinligi) * sutunSayisi + dikeyKenarKalinligi,
+    toplamYukseklik = (kutuYuksekligi + yatayKenarKalinligi) * satirSayisi + yatayKenarKalinligi;
 
 canvas.width = toplamGenislik;
 canvas.height = toplamYukseklik;
 ctx.fillStyle = 'gray';
+
+setInterval(gameLoop, 200);
+
+function gameLoop() {
+    yilaniCiz();
+}
+
+function yilaniCiz() {
+    kutuRenklendir(yilaninKafasininBulunduguSatir, yilaninKafasininBulunduguSutun, 'white');
+    gidilecekYonFonksiyonu();
+    if (!yemekleAyniKonumdaMi()) {
+        kutuRenklendir(kuyrukKonumlari[kuyrukKonumlari.length - 1].satir, kuyrukKonumlari[kuyrukKonumlari.length - 1].sutun, 'white');
+        kuyrukKonumlari.pop();
+    } else {
+        skorArtir();
+        yemekCiz();
+    }
+    kuyrukKonumlari.unshift({satir: yilaninKafasininBulunduguSatir, sutun: yilaninKafasininBulunduguSutun});
+    for (let i = 0; i < kuyrukKonumlari.length; i++) {
+        kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'black');
+    }
+
+    if (yilanDuvaraDegdiMiKontrolEt()) {
+        oyunuSifirla();
+    }
+
+}
+
+function oyunuSifirla() {
+    kutuRenklendir(yilaninKafasininBulunduguSatir, yilaninKafasininBulunduguSutun, 'white');
+    for (let i = 0; i < kuyrukKonumlari; i++) {
+        kutuRenklendir(kuyrukKonumlari[i].satir,kuyrukKonumlari[i].sutun,'white');
+    }
+    kuyrukKonumlari.splice(0, kuyrukKonumlari.length);
+    yilaninKafasininBulunduguSatir = satirlarinOrtasi;
+    yilaninKafasininBulunduguSutun = sutunlarinOrtasi;
+    kuyrukKonumlari.unshift({satir: yilaninKafasininBulunduguSatir, sutun: yilaninKafasininBulunduguSutun});
+    gidilecekYonFonksiyonu = empty;
+    gidilecekYonAdi = '';
+
+}
+
+function empty() {
+
+}
+
+function yilanDuvaraDegdiMiKontrolEt() {
+    switch (gidilecekYonAdi) {
+        case 'up':
+            if (yilaninKafasininBulunduguSatir < 0) {
+                return true;
+            }
+            break;
+        case 'down':
+            if (yilaninKafasininBulunduguSatir === satirSayisi) {
+                return true;
+            }
+            break;
+        case 'left':
+            if (yilaninKafasininBulunduguSutun < 0) {
+                return true;
+            }
+            break;
+        case 'right':
+            if (yilaninKafasininBulunduguSutun === sutunSayisi) {
+                return true;
+            }
+            break;
+    }
+}
 
 function yatayCubuklariCiz() {
     for (let satirNo = 0; satirNo <= satirSayisi; satirNo++) {
@@ -47,6 +113,19 @@ function koordinatBul(satirNo, sutunNo) {
     return {x, y};
 }
 
+function kutuRenklendir(satir, sutun, renk) {
+    const koordinatlar = koordinatBul(satir, sutun);
+
+    previousStyle = ctx.fillStyle;
+    ctx.fillStyle = renk;
+
+    kutucukSolUstX = dikeyKenarKalinligi + koordinatlar.x;
+    kutucukSolUstY = yatayKenarKalinligi + koordinatlar.y;
+
+    ctx.fillRect(kutucukSolUstX, kutucukSolUstY, kutuGenisligi, kutuYuksekligi);
+    ctx.fillStyle = previousStyle;
+}
+
 function xBul(sutunNo) {
     return sutunNo * (kutuGenisligi + dikeyKenarKalinligi);
 }
@@ -55,260 +134,93 @@ function yBul(satirNo) {
     return satirNo * (kutuYuksekligi + yatayKenarKalinligi)
 }
 
-function kutuRenklendir(satir, sutun, renk) {
-    const koordinatlar = koordinatBul(satir, sutun);
-    previousStyle = ctx.fillStyle;
-    ctx.fillStyle = renk;
-    kutucukSolUstX = dikeyKenarKalinligi + koordinatlar.x;
-    kutucukSolUstY = yatayKenarKalinligi + koordinatlar.y;
-
-    ctx.fillRect(kutucukSolUstX, kutucukSolUstY, kutuGenisligi, kutuYuksekligi);
-    ctx.fillStyle = previousStyle;
-}
-
-function pekmeninGozleriniCiz(gidilecekYonAdi) {
-    previousStyle = ctx.fillStyle;
-    ctx.fillStyle = 'white';
-    let sagGozX = kutucukSolUstX + (kutuGenisligi / 2) + (kutuGenisligi / 10);
-    let solGozX = kutucukSolUstX + (kutuGenisligi / 10);
-    let yukaridakiGozlerY = kutucukSolUstY + (kutuYuksekligi / 10);
-    let asagidakiGozlerY = kutucukSolUstY - (kutuYuksekligi / 2) + kutuYuksekligi;
-
-    switch (gidilecekYonAdi) {
-        case "up":
-            ctx.fillRect(solGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
-            ctx.fillRect(sagGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
-            break;
-        case "down":
-            ctx.fillRect(solGozX, asagidakiGozlerY, gozBuyuklugu, gozBuyuklugu);
-            ctx.fillRect(sagGozX, asagidakiGozlerY, gozBuyuklugu, gozBuyuklugu);
-            break;
-        case "left":
-            ctx.fillRect(solGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
-            break;
-        case "right":
-            ctx.fillRect(sagGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
-            break;
-    }
-    ctx.fillStyle = previousStyle;
+function yemekleAyniKonumdaMi() {
+    return yemeginBulunduguSatir === yilaninKafasininBulunduguSatir && yemeginBulunduguSutun === yilaninKafasininBulunduguSutun;
 }
 
 function yemekCiz() {
-    yemeginBulunduguSatir = Math.floor(Math.random() * sutunSayisi);
-    yemeginBulunduguSutun = Math.floor(Math.random() * satirSayisi);
+    yemeginBulunduguSatir = Math.floor(Math.random() * satirSayisi);
+    yemeginBulunduguSutun = Math.floor(Math.random() * sutunSayisi);
+    for (let i = 0; i < kuyrukKonumlari.length; i++) {
+        if (yemeginBulunduguSatir === kuyrukKonumlari[i].satir && yemeginBulunduguSutun === kuyrukKonumlari[i].sutun) {
+            yemekCiz();
+        }
+    }
     kutuRenklendir(yemeginBulunduguSatir, yemeginBulunduguSutun, 'red');
-}
-
-function pekmenDuvariGecerseYemegiSil() {
     yemeginBulunduguOncekiSatir = yemeginBulunduguSatir;
     yemeginBulunduguOncekiSutun = yemeginBulunduguSutun;
+}
+
+function oncekiYemegiSil() {
     kutuRenklendir(yemeginBulunduguOncekiSatir, yemeginBulunduguOncekiSutun, 'white');
 }
 
-function pekmeniOrtala() {
-    pekmeninBulunduguSatir = Math.floor(satirSayisi / 2);
-    pekmeninBulunduguSutun = Math.floor(sutunSayisi / 2);
-    pekmeniCiz();
+function yilaniOrtala() {
+    kuyrukKonumlari.unshift({satir: satirlarinOrtasi, sutun: sutunlarinOrtasi});
 }
 
-setInterval(gameLoop, 400);
-
-function gidilecekYonFonksiyonu() {
+function skorArtir() {
+    score += 10;
+    skorGoster();
 }
 
-function gameLoop() {
-    pekmeninOncekiBulunduguSatir = pekmeninBulunduguSatir;
-    pekmeninOncekiBulunduguSutun = pekmeninBulunduguSutun;
-    gidilecekYonFonksiyonu();
-    pekmeniHareketEttir(gidilecekYonAdi);
-    if (kuyruklar.length > 0)
-        kuyruklariCiz();
+function skorGoster() {
+    document.getElementById('score').innerHTML = score;
 }
 
-function kuyruklariCiz() {
-    kutuRenklendir(kuyruklar[0].satir, kuyruklar[0].sutun, 'white');
-    kuyruklar[0].satir = pekmeninOncekiBulunduguSatir;
-    kuyruklar[0].sutun = pekmeninOncekiBulunduguSutun;
-    kutuRenklendir(kuyruklar[0].satir, kuyruklar[0].sutun, 'orange');
-
-    for (let i = 1; i < kuyruklar.length; i++) {
-        kutuRenklendir(kuyruklar[i].satir, kuyruklar[i].sutun, 'white');
-        switch (gidilecekYonAdi) {
-            case "up":
-                kuyruklar[i].satir = kuyruklar[i - 1].satir + 1;
-                kuyruklar[i].sutun = kuyruklar[i - 1].sutun;
-                break;
-            case "down":
-                kuyruklar[i].satir = kuyruklar[i - 1].satir - 1;
-                kuyruklar[i].sutun = kuyruklar[i - 1].sutun;
-                break;
-            case "left":
-                kuyruklar[i].satir = kuyruklar[i - 1].satir;
-                kuyruklar[i].sutun = kuyruklar[i - 1].sutun + 1;
-                break;
-            case "right":
-                kuyruklar[i].satir = kuyruklar[i - 1].satir;
-                kuyruklar[i].sutun = kuyruklar[i - 1].sutun - 1;
-                break;
-        }
-        kutuRenklendir(kuyruklar[i].satir, kuyruklar[i].sutun, 'orange');
-
-    }
-}
+yatayCubuklariCiz();
+dikeyCubuklariCiz();
+yilaniOrtala();
+yemekCiz();
+skorGoster();
+document.addEventListener('keyup', klavyeTuslarindanBirineBasildi);
 
 function klavyeTuslarindanBirineBasildi(e) {
+
     switch (e.code) {
         case 'ArrowUp':
             if (gidilecekYonAdi !== 'down') {
-                gidilecekYonFonksiyonu = yukariCik;
                 gidilecekYonAdi = 'up';
+                gidilecekYonFonksiyonu = yukariCik;
             }
             break;
         case 'ArrowDown':
             if (gidilecekYonAdi !== 'up') {
-                gidilecekYonFonksiyonu = asagiIn;
                 gidilecekYonAdi = 'down';
+                gidilecekYonFonksiyonu = asagiIn;
             }
             break;
         case 'ArrowLeft':
             if (gidilecekYonAdi !== 'right') {
-                gidilecekYonFonksiyonu = solaGit;
                 gidilecekYonAdi = 'left';
+                gidilecekYonFonksiyonu = solaGit;
             }
             break;
         case 'ArrowRight':
             if (gidilecekYonAdi !== 'left') {
-                gidilecekYonFonksiyonu = sagaGit;
                 gidilecekYonAdi = 'right';
+
+                gidilecekYonFonksiyonu = sagaGit;
             }
             break;
     }
 }
 
+function gidilecekYonFonksiyonu() {
+}
+
 function yukariCik() {
-    pekmeninBulunduguSatir--;
+    yilaninKafasininBulunduguSatir--;
 }
 
 function asagiIn() {
-    pekmeninBulunduguSatir++;
+    yilaninKafasininBulunduguSatir++;
 }
 
 function solaGit() {
-    pekmeninBulunduguSutun--;
+    yilaninKafasininBulunduguSutun--;
 }
 
 function sagaGit() {
-    pekmeninBulunduguSutun++;
+    yilaninKafasininBulunduguSutun++;
 }
-
-function pekmeniHareketEttir(gidilecekYonAdi) {
-    oncekiPekmeniSil();
-    pekmeniCiz();
-
-    pekmeninGozleriniCiz(gidilecekYonAdi);
-
-    pekmenDuvariGectiMi();
-
-    if (yemeginUstundeMi()) {
-        yemegiYe();
-    }
-}
-
-function yemeginUstundeMi() {
-    return yemeginBulunduguSatir === pekmeninBulunduguSatir && yemeginBulunduguSutun === pekmeninBulunduguSutun;
-}
-
-function yemegiYe() {
-    yemekCiz();
-    kuyrukEkle();
-    skor += 10;
-    document.getElementById('skor').innerHTML = '' + skor;
-}
-
-function pekmenDuvariGectiMi() {
-    if (pekmeninBulunduguSatir < 0 || pekmeninBulunduguSatir > satirSayisi - 1 || pekmeninBulunduguSutun < 0 || pekmeninBulunduguSutun > sutunSayisi - 1) {
-        kuyruklar.splice(0, kuyruklar.length);
-        gidilecekYonFonksiyonu = function () {
-        };
-        skor = 0;
-        document.getElementById('skor').innerHTML = '' + skor;
-        pekmenDuvariGecerseYemegiSil();
-        pekmeniOrtala();
-        yemekCiz();
-        gidilecekYonAdi = '';
-    }
-}
-
-function oncekiPekmeniSil() {
-    kutuRenklendir(pekmeninOncekiBulunduguSatir, pekmeninOncekiBulunduguSutun, 'white');
-}
-
-function pekmeniCiz() {
-    kutuRenklendir(pekmeninBulunduguSatir, pekmeninBulunduguSutun, 'black');
-}
-
-function kuyrukEkle() {
-    if (kuyruklar.length === 0) {
-        switch (gidilecekYonAdi) {
-            case "up":
-                kuyruklar.push({
-                    satir: pekmeninOncekiBulunduguSatir + kuyruklar.length,
-                    sutun: pekmeninOncekiBulunduguSutun,
-                });
-                break;
-            case "down":
-                kuyruklar.push({
-                    satir: pekmeninOncekiBulunduguSatir - kuyruklar.length,
-                    sutun: pekmeninOncekiBulunduguSutun
-                });
-                break;
-            case "left":
-                kuyruklar.push({
-                    satir: pekmeninOncekiBulunduguSatir,
-                    sutun: pekmeninOncekiBulunduguSutun + kuyruklar.length
-                });
-                break;
-            case "right":
-                kuyruklar.push({
-                    satir: pekmeninOncekiBulunduguSatir,
-                    sutun: pekmeninOncekiBulunduguSutun - kuyruklar.length
-                });
-                break;
-        }
-    } else {
-        switch (gidilecekYonAdi) {
-            case "up":
-                kuyruklar.push({
-                    satir: kuyruklar[kuyruklar.length - 1].satir + 1,
-                    sutun: kuyruklar[kuyruklar.length - 1].sutun
-                });
-                break;
-            case "down":
-                kuyruklar.push({
-                    satir: kuyruklar[kuyruklar.length - 1].satir - 1,
-                    sutun: kuyruklar[kuyruklar.length - 1].sutun
-                });
-                break;
-            case "left":
-                kuyruklar.push({
-                    satir: kuyruklar[kuyruklar.length - 1].satir,
-                    sutun: kuyruklar[kuyruklar.length - 1].sutun + 1
-                });
-                break;
-            case "right":
-                kuyruklar.push({
-                    satir: kuyruklar[kuyruklar.length - 1].satir,
-                    sutun: kuyruklar[kuyruklar.length - 1].sutun - 1
-                });
-                break;
-        }
-    }
-}
-
-
-yatayCubuklariCiz();
-dikeyCubuklariCiz();
-yemekCiz();
-pekmeniOrtala();
-document.getElementById('skor').innerHTML = '' + skor;
-document.addEventListener('keydown', klavyeTuslarindanBirineBasildi);
