@@ -32,30 +32,29 @@ function gameLoop() {
 }
 
 function yilaniCiz() {
-    kutuRenklendir(yilaninKafasininBulunduguSatir, yilaninKafasininBulunduguSutun, 'white');
-    gidilecekYonFonksiyonu();
-    if (!yemekleAyniKonumdaMi()) {
-        kutuRenklendir(kuyrukKonumlari[kuyrukKonumlari.length - 1].satir, kuyrukKonumlari[kuyrukKonumlari.length - 1].sutun, 'white');
-        kuyrukKonumlari.pop();
-    } else {
-        skorArtir();
-        yemekCiz();
-    }
-    kuyrukKonumlari.unshift({satir: yilaninKafasininBulunduguSatir, sutun: yilaninKafasininBulunduguSutun});
-    for (let i = 0; i < kuyrukKonumlari.length; i++) {
-        kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'black');
-    }
-
     if (yilanDuvaraDegdiMiKontrolEt()) {
         oyunuSifirla();
     }
-
+    else {
+        kutuRenklendir(yilaninKafasininBulunduguSatir, yilaninKafasininBulunduguSutun, 'white');
+        gidilecekYonFonksiyonu();
+        if (!yemekleAyniKonumdaMi()) {
+            kutuRenklendir(kuyrukKonumlari[kuyrukKonumlari.length - 1].satir, kuyrukKonumlari[kuyrukKonumlari.length - 1].sutun, 'white');
+            kuyrukKonumlari.pop();
+        } else {
+            skorArtir();
+            yemekCiz();
+        }
+        kuyrukKonumlari.unshift({satir: yilaninKafasininBulunduguSatir, sutun: yilaninKafasininBulunduguSutun});
+        for (let i = 0; i < kuyrukKonumlari.length; i++) {
+            kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'black');
+        }
+    }
 }
 
 function oyunuSifirla() {
-    kutuRenklendir(yilaninKafasininBulunduguSatir, yilaninKafasininBulunduguSutun, 'white');
-    for (let i = 0; i < kuyrukKonumlari; i++) {
-        kutuRenklendir(kuyrukKonumlari[i].satir,kuyrukKonumlari[i].sutun,'white');
+    for (let i = 0; i < kuyrukKonumlari.length; i++) {
+        kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'white');
     }
     kuyrukKonumlari.splice(0, kuyrukKonumlari.length);
     yilaninKafasininBulunduguSatir = satirlarinOrtasi;
@@ -63,7 +62,7 @@ function oyunuSifirla() {
     kuyrukKonumlari.unshift({satir: yilaninKafasininBulunduguSatir, sutun: yilaninKafasininBulunduguSutun});
     gidilecekYonFonksiyonu = empty;
     gidilecekYonAdi = '';
-
+    skorSifirla();
 }
 
 function empty() {
@@ -157,6 +156,11 @@ function oncekiYemegiSil() {
 
 function yilaniOrtala() {
     kuyrukKonumlari.unshift({satir: satirlarinOrtasi, sutun: sutunlarinOrtasi});
+}
+
+function skorSifirla() {
+    score = 0;
+    skorGoster();
 }
 
 function skorArtir() {
