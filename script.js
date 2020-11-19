@@ -111,7 +111,7 @@ function pekmeniOrtala() {
     pekmeniCiz();
 }
 
-setInterval(gameLoop, 200);
+setInterval(gameLoop, 400);
 
 function gidilecekYonFonksiyonu() {
 }
@@ -121,27 +121,66 @@ function gameLoop() {
     pekmeninOncekiBulunduguSutun = pekmeninBulunduguSutun;
     gidilecekYonFonksiyonu();
     pekmeniHareketEttir(gidilecekYonAdi);
-    kuyruklariHareketEttir();
+    if (kuyruklar.length > 0)
+        kuyruklariCiz();
+}
 
+function kuyruklariCiz() {
+    kutuRenklendir(kuyruklar[0].satir, kuyruklar[0].sutun, 'white');
+    kuyruklar[0].satir = pekmeninOncekiBulunduguSatir;
+    kuyruklar[0].sutun = pekmeninOncekiBulunduguSutun;
+    kutuRenklendir(kuyruklar[0].satir, kuyruklar[0].sutun, 'orange');
+
+    for (let i = 1; i < kuyruklar.length; i++) {
+        kutuRenklendir(kuyruklar[i].satir, kuyruklar[i].sutun, 'white');
+        switch (gidilecekYonAdi) {
+            case "up":
+                kuyruklar[i].satir = kuyruklar[i - 1].satir + 1;
+                kuyruklar[i].sutun = kuyruklar[i - 1].sutun;
+                break;
+            case "down":
+                kuyruklar[i].satir = kuyruklar[i - 1].satir - 1;
+                kuyruklar[i].sutun = kuyruklar[i - 1].sutun;
+                break;
+            case "left":
+                kuyruklar[i].satir = kuyruklar[i - 1].satir;
+                kuyruklar[i].sutun = kuyruklar[i - 1].sutun + 1;
+                break;
+            case "right":
+                kuyruklar[i].satir = kuyruklar[i - 1].satir;
+                kuyruklar[i].sutun = kuyruklar[i - 1].sutun - 1;
+                break;
+        }
+        kutuRenklendir(kuyruklar[i].satir, kuyruklar[i].sutun, 'orange');
+
+    }
 }
 
 function klavyeTuslarindanBirineBasildi(e) {
     switch (e.code) {
         case 'ArrowUp':
-            gidilecekYonFonksiyonu = yukariCik;
-            gidilecekYonAdi = 'up';
+            if (gidilecekYonAdi !== 'down') {
+                gidilecekYonFonksiyonu = yukariCik;
+                gidilecekYonAdi = 'up';
+            }
             break;
         case 'ArrowDown':
-            gidilecekYonFonksiyonu = asagiIn;
-            gidilecekYonAdi = 'down';
+            if (gidilecekYonAdi !== 'up') {
+                gidilecekYonFonksiyonu = asagiIn;
+                gidilecekYonAdi = 'down';
+            }
             break;
         case 'ArrowLeft':
-            gidilecekYonFonksiyonu = solaGit;
-            gidilecekYonAdi = 'left';
+            if (gidilecekYonAdi !== 'right') {
+                gidilecekYonFonksiyonu = solaGit;
+                gidilecekYonAdi = 'left';
+            }
             break;
         case 'ArrowRight':
-            gidilecekYonFonksiyonu = sagaGit;
-            gidilecekYonAdi = 'right';
+            if (gidilecekYonAdi !== 'left') {
+                gidilecekYonFonksiyonu = sagaGit;
+                gidilecekYonAdi = 'right';
+            }
             break;
     }
 }
@@ -163,10 +202,9 @@ function sagaGit() {
 }
 
 function pekmeniHareketEttir(gidilecekYonAdi) {
-
-
     oncekiPekmeniSil();
     pekmeniCiz();
+
     pekmeninGozleriniCiz(gidilecekYonAdi);
 
     pekmenDuvariGectiMi();
@@ -174,11 +212,8 @@ function pekmeniHareketEttir(gidilecekYonAdi) {
     if (yemeginUstundeMi()) {
         yemegiYe();
     }
-
 }
-function kuyruklariHareketEttir(){
 
-}
 function yemeginUstundeMi() {
     return yemeginBulunduguSatir === pekmeninBulunduguSatir && yemeginBulunduguSutun === pekmeninBulunduguSutun;
 }
@@ -186,7 +221,6 @@ function yemeginUstundeMi() {
 function yemegiYe() {
     yemekCiz();
     kuyrukEkle();
-    kuyrukCiz();
     skor += 10;
     document.getElementById('skor').innerHTML = '' + skor;
 }
@@ -201,6 +235,7 @@ function pekmenDuvariGectiMi() {
         pekmenDuvariGecerseYemegiSil();
         pekmeniOrtala();
         yemekCiz();
+        gidilecekYonAdi = '';
     }
 }
 
@@ -213,27 +248,63 @@ function pekmeniCiz() {
 }
 
 function kuyrukEkle() {
-    switch (gidilecekYonAdi){
-        case "up":
-            kuyruklar.push({satir: pekmeninBulunduguSatir+kuyruklar.length, sutun: pekmeninBulunduguSutun});
-            break;
-        case "down":
-            kuyruklar.push({satir: pekmeninBulunduguSatir-kuyruklar.length, sutun:pekmeninBulunduguSutun});
-            break;
-        case "left":
-            kuyruklar.push({satir: pekmeninBulunduguSatir, sutun: pekmeninBulunduguSutun+kuyruklar.length});
-            break;
-        case "right":
-            kuyruklar.push({satir: pekmeninBulunduguSatir, sutun: pekmeninBulunduguSutun-kuyruklar.length});
-            break;
+    if (kuyruklar.length === 0) {
+        switch (gidilecekYonAdi) {
+            case "up":
+                kuyruklar.push({
+                    satir: pekmeninOncekiBulunduguSatir + kuyruklar.length,
+                    sutun: pekmeninOncekiBulunduguSutun,
+                });
+                break;
+            case "down":
+                kuyruklar.push({
+                    satir: pekmeninOncekiBulunduguSatir - kuyruklar.length,
+                    sutun: pekmeninOncekiBulunduguSutun
+                });
+                break;
+            case "left":
+                kuyruklar.push({
+                    satir: pekmeninOncekiBulunduguSatir,
+                    sutun: pekmeninOncekiBulunduguSutun + kuyruklar.length
+                });
+                break;
+            case "right":
+                kuyruklar.push({
+                    satir: pekmeninOncekiBulunduguSatir,
+                    sutun: pekmeninOncekiBulunduguSutun - kuyruklar.length
+                });
+                break;
+        }
+    } else {
+        switch (gidilecekYonAdi) {
+            case "up":
+                kuyruklar.push({
+                    satir: kuyruklar[kuyruklar.length - 1].satir + 1,
+                    sutun: kuyruklar[kuyruklar.length - 1].sutun
+                });
+                break;
+            case "down":
+                kuyruklar.push({
+                    satir: kuyruklar[kuyruklar.length - 1].satir - 1,
+                    sutun: kuyruklar[kuyruklar.length - 1].sutun
+                });
+                break;
+            case "left":
+                kuyruklar.push({
+                    satir: kuyruklar[kuyruklar.length - 1].satir,
+                    sutun: kuyruklar[kuyruklar.length - 1].sutun + 1
+                });
+                break;
+            case "right":
+                kuyruklar.push({
+                    satir: kuyruklar[kuyruklar.length - 1].satir,
+                    sutun: kuyruklar[kuyruklar.length - 1].sutun - 1
+                });
+                break;
+        }
     }
-
-    console.log(kuyruklar.length)
 }
-function kuyrukCiz(){
-    kutuRenklendir(kuyruklar[kuyruklar.length-1].satir,kuyruklar[kuyruklar.length-1].sutun,'black');
 
-}
 
 yatayCubuklariCiz();
 dikeyCubuklariCiz();
