@@ -97,9 +97,20 @@ function yilanDuvaraDegdiMiKontrolEt() {
 
 function yilanKendineDegdiMiKontrolEt() {
     let yilanKendineDokundu = false;
-    for (let j = 1; j < kuyrukKonumlari.length; j++) {
-        if(yilaninKafasininBulunduguSatir === kuyrukKonumlari[j].satir && yilaninKafasininBulunduguSutun === kuyrukKonumlari[j].sutun){
-            yilanKendineDokundu = true;
+    for (let i = 1; i < kuyrukKonumlari.length; i++) {
+        switch (gidilecekYonAdi) {
+            case "up":
+                if (yilaninKafasininBulunduguSatir - 1 === kuyrukKonumlari[i].satir && yilaninKafasininBulunduguSutun === kuyrukKonumlari[i].sutun) yilanKendineDokundu = true;
+                break;
+            case "down":
+                if (yilaninKafasininBulunduguSatir + 1 === kuyrukKonumlari[i].satir && yilaninKafasininBulunduguSutun === kuyrukKonumlari[i].sutun) yilanKendineDokundu = true;
+                break;
+            case "left":
+                if (yilaninKafasininBulunduguSutun - 1 === kuyrukKonumlari[i].sutun && yilaninKafasininBulunduguSatir === kuyrukKonumlari[i].satir) yilanKendineDokundu = true;
+                break;
+            case "right":
+                if (yilaninKafasininBulunduguSutun + 1 === kuyrukKonumlari[i].sutun && yilaninKafasininBulunduguSatir === kuyrukKonumlari[i].satir) yilanKendineDokundu = true;
+                break;
         }
     }
     return yilanKendineDokundu;
