@@ -13,6 +13,7 @@ let hiz = 200,
     score = 0,
     gidilecekYonAdi = '',
     kuyrukKonumlari = [],
+    kuyrugunBulunmadigiKonumlar = [],
     yilaninKafasininBulunduguSatir = satirlarinOrtasi,
     yilaninKafasininBulunduguSutun = sutunlarinOrtasi,
     yemeginBulunduguOncekiSatir = 0,
@@ -20,21 +21,27 @@ let hiz = 200,
     yemeginBulunduguSatir = 0,
     yemeginBulunduguSutun = 0,
     toplamGenislik = (kutuGenisligi + dikeyKenarKalinligi) * sutunSayisi + dikeyKenarKalinligi,
-    toplamYukseklik = (kutuYuksekligi + yatayKenarKalinligi) * satirSayisi + yatayKenarKalinligi;
+    toplamYukseklik = (kutuYuksekligi + yatayKenarKalinligi) * satirSayisi + yatayKenarKalinligi,
+    previousStyle = '',
+    kutucukSolUstX = 0,
+    kutucukSolUstY = 0;
 
 canvas.width = toplamGenislik;
 canvas.height = toplamYukseklik;
 ctx.fillStyle = 'gray';
 
 let timer = setInterval(gameLoop, hiz);
-function hizArtir(){
+
+function hizArtir() {
     clearInterval(timer);
-    timer = setInterval(gameLoop, hiz-55);
+    timer = setInterval(gameLoop, hiz - 55);
 }
-function hiziNormalYap(){
+
+function hiziNormalYap() {
     clearInterval(timer);
     timer = setInterval(gameLoop, 250);
 }
+
 function gameLoop() {
     yilaniCiz();
 }
@@ -46,19 +53,51 @@ function yilaniCiz() {
         oyunuSifirla();
     } else {
         kutuRenklendir(yilaninKafasininBulunduguSatir, yilaninKafasininBulunduguSutun, 'white');
+
         gidilecekYonFonksiyonu();
         if (!yemekleAyniKonumdaMi()) {
             kutuRenklendir(kuyrukKonumlari[kuyrukKonumlari.length - 1].satir, kuyrukKonumlari[kuyrukKonumlari.length - 1].sutun, 'white');
             kuyrukKonumlari.pop();
+
         } else {
             hizArtir();
             skorArtir();
             yemekCiz();
         }
         kuyrukKonumlari.unshift({satir: yilaninKafasininBulunduguSatir, sutun: yilaninKafasininBulunduguSutun});
-        for (let i = 0; i < kuyrukKonumlari.length; i++) {
+
+        kutuRenklendir(kuyrukKonumlari[0].satir, kuyrukKonumlari[0].sutun, 'black');
+        gozCiz(); // ilk kutuya göz çizdirmek için bu işlemi yaptım
+        for (let i = 1; i < kuyrukKonumlari.length; i++) {
             kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'black');
         }
+
+    }
+}
+
+function gozCiz() {
+    ctx.fillStyle = 'white';
+    let sagGozX = kutucukSolUstX + (kutuGenisligi / 2) + (kutuGenisligi / 10);
+    let solGozX = kutucukSolUstX + (kutuGenisligi / 10);
+    let yukaridakiGozlerY = kutucukSolUstY + (kutuYuksekligi / 10);
+    let asagidakiGozlerY = kutucukSolUstY - (kutuYuksekligi / 2) + kutuYuksekligi;
+    let gozBuyuklugu = kutuGenisligi / 4;
+
+    switch (gidilecekYonAdi) {
+        case "up":
+            ctx.fillRect(solGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            ctx.fillRect(sagGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            break;
+        case "down":
+            ctx.fillRect(solGozX, asagidakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            ctx.fillRect(sagGozX, asagidakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            break;
+        case "left":
+            ctx.fillRect(solGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            break;
+        case "right":
+            ctx.fillRect(sagGozX, yukaridakiGozlerY, gozBuyuklugu, gozBuyuklugu);
+            break;
     }
 }
 
@@ -67,6 +106,8 @@ function oyunuSifirla() {
     for (let i = 0; i < kuyrukKonumlari.length; i++) {
         kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'white');
     }
+    oncekiYemegiSil();
+    yemekCiz();
     kuyrukKonumlari.splice(0, kuyrukKonumlari.length);
     yilaninKafasininBulunduguSatir = satirlarinOrtasi;
     yilaninKafasininBulunduguSutun = sutunlarinOrtasi;
@@ -181,6 +222,29 @@ function yemekCiz() {
     kutuRenklendir(yemeginBulunduguSatir, yemeginBulunduguSutun, 'red');
     yemeginBulunduguOncekiSatir = yemeginBulunduguSatir;
     yemeginBulunduguOncekiSutun = yemeginBulunduguSutun;
+    // kuyrugunBulunmadigiKonumlar.splice(0,kuyrugunBulunmadigiKonumlar.length);
+    // let esit = false;
+    // for (let satir = 0; satir < satirSayisi; satir++) {
+    //     for (let sutun = 0; sutun < sutunSayisi; sutun++) {
+    //         for(let kuyruktakiElemanlarIndex = 0; kuyruktakiElemanlarIndex < kuyrukKonumlari.length ; kuyruktakiElemanlarIndex++){
+    //             if (kuyrukKonumlari[kuyruktakiElemanlarIndex].satir === satir && kuyrukKonumlari[kuyruktakiElemanlarIndex].sutun === sutun)
+    //                 esit = true;
+    //         }
+    //         if (esit === false){
+    //             kuyrugunBulunmadigiKonumlar.push({satir: satir, sutun: sutun});
+    //         }
+    //         else{
+    //             esit = false;
+    //         }
+    //     }
+    // }
+    //
+    // yemeginBulunduguSatir = Math.floor(Math.random() * satirSayisi);
+    // yemeginBulunduguSutun = Math.floor(Math.random() * sutunSayisi);
+    // console.log("satır : "+kuyrugunBulunmadigiKonumlar[yemeginBulunduguSatir].satir+" sutun : "+kuyrugunBulunmadigiKonumlar[yemeginBulunduguSutun].sutun)
+    // kutuRenklendir(kuyrugunBulunmadigiKonumlar[yemeginBulunduguSatir].sutun, kuyrugunBulunmadigiKonumlar[yemeginBulunduguSutun].sutun, 'red');
+    // yemeginBulunduguOncekiSatir = yemeginBulunduguSatir;
+    // yemeginBulunduguOncekiSutun = yemeginBulunduguSutun;
 }
 
 function oncekiYemegiSil() {
