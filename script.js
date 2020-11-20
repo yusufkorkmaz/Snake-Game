@@ -9,7 +9,8 @@ const canvas = document.querySelector('canvas'),
     satirlarinOrtasi = Math.floor(satirSayisi / 2),
     sutunlarinOrtasi = Math.floor(sutunSayisi / 2);
 
-let score = 0,
+let hiz = 200,
+    score = 0,
     gidilecekYonAdi = '',
     kuyrukKonumlari = [],
     yilaninKafasininBulunduguSatir = satirlarinOrtasi,
@@ -25,8 +26,15 @@ canvas.width = toplamGenislik;
 canvas.height = toplamYukseklik;
 ctx.fillStyle = 'gray';
 
-setInterval(gameLoop, 200);
-
+let timer = setInterval(gameLoop, hiz);
+function hizArtir(){
+    clearInterval(timer);
+    timer = setInterval(gameLoop, hiz-55);
+}
+function hiziNormalYap(){
+    clearInterval(timer);
+    timer = setInterval(gameLoop, 250);
+}
 function gameLoop() {
     yilaniCiz();
 }
@@ -43,6 +51,7 @@ function yilaniCiz() {
             kutuRenklendir(kuyrukKonumlari[kuyrukKonumlari.length - 1].satir, kuyrukKonumlari[kuyrukKonumlari.length - 1].sutun, 'white');
             kuyrukKonumlari.pop();
         } else {
+            hizArtir();
             skorArtir();
             yemekCiz();
         }
@@ -54,6 +63,7 @@ function yilaniCiz() {
 }
 
 function oyunuSifirla() {
+    hiziNormalYap();
     for (let i = 0; i < kuyrukKonumlari.length; i++) {
         kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'white');
     }
@@ -64,6 +74,7 @@ function oyunuSifirla() {
     gidilecekYonFonksiyonu = empty;
     gidilecekYonAdi = '';
     skorSifirla();
+
 }
 
 function empty() {
