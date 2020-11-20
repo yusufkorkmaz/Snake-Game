@@ -24,7 +24,8 @@ let hiz = 200,
     toplamYukseklik = (kutuYuksekligi + yatayKenarKalinligi) * satirSayisi + yatayKenarKalinligi,
     previousStyle = '',
     kutucukSolUstX = 0,
-    kutucukSolUstY = 0;
+    kutucukSolUstY = 0,
+    baslangictaEklenecekKuyrukSayisi = 2;
 
 canvas.width = toplamGenislik;
 canvas.height = toplamYukseklik;
@@ -56,9 +57,14 @@ function yilaniCiz() {
 
         gidilecekYonFonksiyonu();
         if (!yemekleAyniKonumdaMi()) {
-            kutuRenklendir(kuyrukKonumlari[kuyrukKonumlari.length - 1].satir, kuyrukKonumlari[kuyrukKonumlari.length - 1].sutun, 'white');
-            kuyrukKonumlari.pop();
-
+            if (baslangictaEklenecekKuyrukSayisi > 3) {
+                kutuRenklendir(kuyrukKonumlari[kuyrukKonumlari.length - 1].satir, kuyrukKonumlari[kuyrukKonumlari.length - 1].sutun, 'white');
+                kuyrukKonumlari.pop();
+            } else {
+                if (baslangictaEklenecekKuyrukSayisi <= 3) {
+                    baslangictaEklenecekKuyrukSayisi++;
+                }
+            }
         } else {
             hizArtir();
             skorArtir();
@@ -66,14 +72,15 @@ function yilaniCiz() {
         }
         kuyrukKonumlari.unshift({satir: yilaninKafasininBulunduguSatir, sutun: yilaninKafasininBulunduguSutun});
 
+        // ilk kutuya göz çizdirmek için bu işlemi yaptım
         kutuRenklendir(kuyrukKonumlari[0].satir, kuyrukKonumlari[0].sutun, 'black');
-        gozCiz(); // ilk kutuya göz çizdirmek için bu işlemi yaptım
+        gozCiz();
         for (let i = 1; i < kuyrukKonumlari.length; i++) {
             kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'black');
         }
-
     }
 }
+
 
 function gozCiz() {
     ctx.fillStyle = 'white';
@@ -102,6 +109,7 @@ function gozCiz() {
 }
 
 function oyunuSifirla() {
+    baslangictaEklenecekKuyrukSayisi = 2;
     hiziNormalYap();
     for (let i = 0; i < kuyrukKonumlari.length; i++) {
         kutuRenklendir(kuyrukKonumlari[i].satir, kuyrukKonumlari[i].sutun, 'white');

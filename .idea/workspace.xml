@@ -19,7 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9aff7cf7-84f8-4345-82d0-0f0100695a57" name="Default Changelist" comment="Yem yedikçe zamanla hızlanma ayarlandı">
+    <list default="true" id="9aff7cf7-84f8-4345-82d0-0f0100695a57" name="Default Changelist" comment="Göz eklendi">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/script.js" afterDir="false" />
     </list>
@@ -77,7 +77,7 @@
       <workItem from="1605702290103" duration="10145000" />
       <workItem from="1605725830235" duration="10000" />
       <workItem from="1605770151416" duration="41398000" />
-      <workItem from="1605857884697" duration="12428000" />
+      <workItem from="1605857884697" duration="14502000" />
     </task>
     <task id="LOCAL-00001" summary="Pacman'in gözleri eklendi">
       <created>1605707830163</created>
@@ -142,7 +142,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605832181359</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Göz eklendi">
+      <created>1605873654718</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1605873654718</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -170,17 +177,18 @@
     <MESSAGE value="Yılan kendine değince oyunun baştan başlaması ayarlandı" />
     <MESSAGE value="Yılan kendine değince oyunun baştan başlaması düzenlendi" />
     <MESSAGE value="Yem yedikçe zamanla hızlanma ayarlandı" />
-    <option name="LAST_COMMIT_MESSAGE" value="Yem yedikçe zamanla hızlanma ayarlandı" />
+    <MESSAGE value="Göz eklendi" />
+    <option name="LAST_COMMIT_MESSAGE" value="Göz eklendi" />
   </component>
   <component name="WindowStateProjectService">
     <state x="395" y="91" key="#Inspections" timestamp="1605829356302">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="395" y="91" key="#Inspections/0.0.1536.824@0.0.1536.824" timestamp="1605829356302" />
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1605832183168">
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1605873656874">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1605832183168" />
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1605873656874" />
     <state x="378" y="91" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1605302294159">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
