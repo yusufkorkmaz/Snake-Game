@@ -34,8 +34,9 @@ function gameLoop() {
 function yilaniCiz() {
     if (yilanDuvaraDegdiMiKontrolEt()) {
         oyunuSifirla();
-    }
-    else {
+    } else if (yilanKendineDegdiMiKontrolEt()) {
+        oyunuSifirla();
+    } else {
         kutuRenklendir(yilaninKafasininBulunduguSatir, yilaninKafasininBulunduguSutun, 'white');
         gidilecekYonFonksiyonu();
         if (!yemekleAyniKonumdaMi()) {
@@ -72,26 +73,36 @@ function empty() {
 function yilanDuvaraDegdiMiKontrolEt() {
     switch (gidilecekYonAdi) {
         case 'up':
-            if (yilaninKafasininBulunduguSatir < 0) {
+            if (yilaninKafasininBulunduguSatir === 0) {
                 return true;
             }
             break;
         case 'down':
-            if (yilaninKafasininBulunduguSatir === satirSayisi) {
+            if (yilaninKafasininBulunduguSatir === satirSayisi - 1) {
                 return true;
             }
             break;
         case 'left':
-            if (yilaninKafasininBulunduguSutun < 0) {
+            if (yilaninKafasininBulunduguSutun === 0) {
                 return true;
             }
             break;
         case 'right':
-            if (yilaninKafasininBulunduguSutun === sutunSayisi) {
+            if (yilaninKafasininBulunduguSutun === sutunSayisi - 1) {
                 return true;
             }
             break;
     }
+}
+
+function yilanKendineDegdiMiKontrolEt() {
+    let yilanKendineDokundu = false;
+    for (let j = 1; j < kuyrukKonumlari.length; j++) {
+        if(yilaninKafasininBulunduguSatir === kuyrukKonumlari[j].satir && yilaninKafasininBulunduguSutun === kuyrukKonumlari[j].sutun){
+            yilanKendineDokundu = true;
+        }
+    }
+    return yilanKendineDokundu;
 }
 
 function yatayCubuklariCiz() {
